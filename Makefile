@@ -1,4 +1,7 @@
-.DEFAULT_GOAL:=help
+ifeq (1,$(words $(MAKEFILE_LIST))) # if not included
+  .DEFAULT_GOAL:=help
+endif
+
 define HELP
 Makefile for documents converting using pandoc.
   Source: *.text (extension defined by SOURCE_EXT).
@@ -29,10 +32,14 @@ Notes:
      Alternatively they can reside in $(APPDATA)\pandoc\filters
   3. Some conversions may require lua writers, which must be present in current directory.
      Alternatively they can reside in $(APPDATA)\pandoc\custom
+  4. The best way to customize this Makefile is including it in own Makefile, adding new rules
+     and (re)defining corresponding variables.
 endef
 
 SOURCE_EXT:=text
-TARGET_EXT:=hlfhtml htm html md bbcode native json hlf
+SOURCE_FORMAT?=--from=markdown-auto_identifiers-raw_tex+autolink_bare_uris
+
+TARGET_EXT+=hlfhtml htm html md plain native json hlf
 ifneq (,$(filter $(TARGET_EXT),$(SOURCE_EXT)))
   $(error TARGET_EXT cannot include SOURCE_EXT)
 else ifneq (1,$(words $(SOURCE_EXT)))
@@ -41,34 +48,36 @@ endif
 
 #https://pandoc.org/installing.html
 PANDOC?=pandoc.exe
-FLAGS:=--from=markdown-auto_identifiers --wrap=preserve
-EXTRA:=--strip-comments --lua-filter=extra.lua
+TARGET_FORMAT:= # deduced from extension; defaulting to html
+FLAGS+=--wrap=preserve
+EXTRA+=--lua-filter=FarLinks.lua
 
 #https://www.nuget.org/packages/HtmlToFarHelp
 HTMLTOFARHELP?=HtmlToFarHelp.exe
 
 RM:=del
 
+# Far Manager help file
 %.hlf: %.hlfhtml
 	@$(HTMLTOFARHELP) from="$<"; to="$@"
 	$(info $@)
 
-%.hlfhtml: FLAGS+= --to=html --no-highlight #intermediate file for hlf
+# intermediate file for hlf
+%.hlfhtml: TARGET_FORMAT:= --to=html --no-highlight
 %.hlfhtml: EXTRA:=
 
-%.html: FLAGS+= --standalone
+# full-featured html, with headers, styles, ... (otherwise use `htm`)
+%.html: FLAGS+= --standalone --strip-comments --lua-filter=HeaderToTitle.lua
 
-%.md: FLAGS+= --to=gfm --lua-filter=gfm.lua #github-flavored markdown
-
-%.bbcode: bbcode.lua
-%.bbcode: FLAGS+= --to=bbcode.lua
+# github-flavored markdown (pandoc --list-extensions=gfm)
+%.md: TARGET_FORMAT:= --to=gfm --lua-filter=DefinitionToBulletList.lua
 
 #prevent circular dependencies
 %.text %.lua: ;
-Makefile: ;
+$(MAKEFILE_LIST): ;
 .SECONDEXPANSION: #https://www.gnu.org/software/make/manual/html_node/Secondary-Expansion.html#Secondary-Expansion
-%: $$(basename %).$(SOURCE_EXT) Makefile $(wildcard *.lua)
-	@$(PANDOC) $(FLAGS) $(EXTRA) --output=$@ $<
+%: $$(basename %).$(SOURCE_EXT) $(MAKEFILE_LIST) $(wildcard *.lua)
+	@$(PANDOC) $(SOURCE_FORMAT) $(TARGET_FORMAT) $(FLAGS) $(EXTRA) --output=$@ $<
 	$(info $@)
 
 .PHONY: $(TARGET_EXT) clean help

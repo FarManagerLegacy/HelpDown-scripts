@@ -1,6 +1,6 @@
---pandoc --list-extensions=gfm
+-- transform to BulletList
 
-function DefinitionList(el) --transform to BulletList
+function DefinitionList(el) 
   local items = {}
   for i,item in ipairs(el.content) do
     local dt,blocks = table.unpack(item) --term,definitions
@@ -14,7 +14,3 @@ function DefinitionList(el) --transform to BulletList
   end
   return pandoc.BulletList(items)
 end
-
---todo Code to <kbd>:
---Code ( "" , [] , [] ) "Ctrl+Alt+Up"
---RawInline (Format "html") "<kbd>", Str "Ctrl+Alt+Up", RawInline (Format "html") "</kbd>"
