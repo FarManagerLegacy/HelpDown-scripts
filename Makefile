@@ -25,11 +25,15 @@ make clean
 make help
   This help
 
+make install
+  Copy *.lua to $(APPDATA)\pandoc\filters
+
 Notes:
   1. pandoc.exe and HtmlToFarHelp.exe must be available.
      It is also possible to define full paths in env variables PANDOC/HTMLTOFARHELP.
   2. Some conversions may require additional lua filters, which must be present in current directory.
      Alternatively they can reside in $(APPDATA)\pandoc\filters
+     (See `make install`)
   3. Some conversions may require lua writers, which must be present in current directory.
      Alternatively they can reside in $(APPDATA)\pandoc\custom
   4. The best way to customize this Makefile is including it in own Makefile, adding new rules
@@ -80,7 +84,7 @@ $(MAKEFILE_LIST): ;
 	@$(PANDOC) $(SOURCE_FORMAT) $(TARGET_FORMAT) $(FLAGS) $(EXTRA) --output=$@ $<
 	$(info $@)
 
-.PHONY: $(TARGET_EXT) clean help
+.PHONY: $(TARGET_EXT) clean help install
 
 # targets like html md hlf...
 SOURCES:=$(wildcard *.$(SOURCE_EXT))
@@ -95,3 +99,11 @@ clean:
 help:
 	$(info $(HELP))
 	@rem
+
+INSTALL_DIR:=$(APPDATA)/pandoc/filters
+install: $(INSTALL_DIR) $(addprefix $(INSTALL_DIR)/, $(wildcard *.lua))
+$(INSTALL_DIR):
+	mkdir $(subst /,\,$@)
+$(INSTALL_DIR)/%: %
+	@rem cmd /c mklink $(subst /,\, $@ $(realpath $<))
+	copy $< $(subst /,\,$@)
