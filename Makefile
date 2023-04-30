@@ -12,12 +12,12 @@ make some_doc.html
   Convert some_doc.text to some_doc.html.
   Instead of ".html" any other pandoc-supported file type can be used.
 
-make some_doc.hlf
-  Convert some_doc.text to some_doc.hlf using pandoc and HtmlToFarHelp.
-
 make html
   Convert *.text to *.html.
   Instead of ".html" any other supported extension can be used, incl. hlf (must be enumerated in TARGET_EXT).
+
+make some_doc.hlf
+  Convert some_doc.text to some_doc.hlf using pandoc and HtmlToFarHelp.
 
 make clean
   Clean current directory from all files with extensins specified in TARGET_EXT.
@@ -27,15 +27,16 @@ make help
 
 make install
   Copy *.lua to $(APPDATA)\pandoc\filters
+  Or to $$(DATA_DIR)\filters (if defined).
 
 Notes:
   1. pandoc.exe and HtmlToFarHelp.exe must be available.
      It is also possible to define full paths in env variables PANDOC/HTMLTOFARHELP.
   2. Some conversions may require additional lua filters, which must be present in current directory.
-     Alternatively they can reside in $(APPDATA)\pandoc\filters
+     Alternatively they can reside in $(DATA_DIR)\filters
      (See `make install`)
   3. Some conversions may require lua writers, which must be present in current directory.
-     Alternatively they can reside in $(APPDATA)\pandoc\custom
+     Alternatively they can reside in $(DATA_DIR)\custom
   4. The best way to customize this Makefile is including it in own Makefile, adding new rules
      and (re)defining corresponding variables.
 endef
@@ -60,6 +61,13 @@ EXTRA+=--lua-filter=FarLinks.lua
 HTMLTOFARHELP?=HtmlToFarHelp.exe
 
 RM:=del
+
+ifdef DATA_DIR
+  FLAGS+= --data-dir=$(DATA_DIR)
+else
+  DATA_DIR:=$(APPDATA)\pandoc#default
+endif
+LUA_PATH:=$(LUA_PATH);$(DATA_DIR)\filters\?.lua;$(DATA_DIR)\filters\?\init.lua
 
 # Far Manager help file
 %.hlf: %.hlfhtml
@@ -100,10 +108,9 @@ help:
 	$(info $(HELP))
 	@rem
 
-INSTALL_DIR:=$(APPDATA)/pandoc/filters
-install: $(INSTALL_DIR) $(addprefix $(INSTALL_DIR)/, $(wildcard *.lua))
-$(INSTALL_DIR):
+install: $(DATA_DIR)/filters $(addprefix $(DATA_DIR)/filters/, $(wildcard *.lua))
+$(DATA_DIR)/filters:
 	mkdir $(subst /,\,$@)
-$(INSTALL_DIR)/%: %
+$(DATA_DIR)/filters/%: %
 	@rem cmd /c mklink $(subst /,\, $@ $(realpath $<))
 	copy $< $(subst /,\,$@)
