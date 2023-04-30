@@ -17,7 +17,12 @@ make html
   Instead of ".html" any other supported extension can be used, incl. hlf (must be enumerated in TARGET_EXT).
 
 make some_doc.hlf
-  Convert some_doc.text to some_doc.hlf using pandoc and HtmlToFarHelp.
+make hlf
+  Convert to .hlf using pandoc and HtmlToFarHelp.
+
+make some_doc.forum
+make forum
+  Convert to phpBB-flavored markdown (Litedown).
 
 make clean
   Clean current directory from all files with extensins specified in TARGET_EXT.
@@ -44,7 +49,7 @@ endef
 SOURCE_EXT:=text
 SOURCE_FORMAT?=--from=markdown-auto_identifiers-raw_tex+autolink_bare_uris
 
-TARGET_EXT+=hlfhtml htm html md plain native json hlf
+TARGET_EXT+=hlfhtml htm html md plain native json forum hlf
 ifneq (,$(filter $(TARGET_EXT),$(SOURCE_EXT)))
   $(error TARGET_EXT cannot include SOURCE_EXT)
 else ifneq (1,$(words $(SOURCE_EXT)))
@@ -83,6 +88,11 @@ LUA_PATH:=$(LUA_PATH);$(DATA_DIR)\filters\?.lua;$(DATA_DIR)\filters\?\init.lua
 
 # github-flavored markdown (pandoc --list-extensions=gfm)
 %.md: TARGET_FORMAT:= --to=gfm --lua-filter=DefinitionToBulletList.lua
+
+# prepare text for posting on forum.farmanager.com
+%.forum: TARGET_FORMAT:=--to=markdown_strict+fenced_code_blocks-raw_html --lua-filter=DefinitionToBulletList.lua
+%.forum: FLAGS+= --lua-filter=fold.lua --lua-filter=forum.lua
+%.forum: EXTRA:=--shift-heading-level-by=1 --strip-comments
 
 #prevent circular dependencies
 %.text %.lua: ;
