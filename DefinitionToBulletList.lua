@@ -1,5 +1,4 @@
--- transform to BulletList
-
+-- transform DL to BulletList
 function DefinitionList(el) 
   local items = {}
   for i,item in ipairs(el.content) do

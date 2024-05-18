@@ -1,5 +1,5 @@
 -- phpBB3 uses own markdown parser (https://s9etextformatter.readthedocs.io/Plugins/Litedown/Syntax/),
--- which differs in some minor details. That's why some fixes is need.
+-- which differs in some minor details. That's why some fixes needed.
 
 function Str (el)
   -- normal way of escaping the asterisk is \*, but that does not work in Litedown.

@@ -1,6 +1,7 @@
 -- helper script to execute same `callback` function for every section
 -- to the same section belong blocks beginning by header and ending by last block before next header
--- it is possible to skip some header (= include it inside section), with `condition` function, returning `true`
+-- it is possible to skip some header (= absorb it's content into current section),
+-- with `condition` function, returning `true`
 
 return function (blocks, callback, condition)
   local start

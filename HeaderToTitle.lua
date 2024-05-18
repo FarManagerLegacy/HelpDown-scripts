@@ -1,4 +1,4 @@
--- grab first header as title, but only if no explicit metadata specified (yaml)
+-- Grab first header as title, but only if no explicit metadata specified (yaml)
 
 local title
 function Header(el)

@@ -1,4 +1,5 @@
--- Save space moving all (except first) sections content inside spoilers
+-- Save space wrapping all (except first) sections content inside spoilers
+
 local function condition (header, blocks, idx)
   if pandoc.utils.stringify(header):match"cfgscript" then --hardcoded for now
     blocks[idx] = pandoc.HorizontalRule()
@@ -6,7 +7,7 @@ local function condition (header, blocks, idx)
   end
 end
 
-local function callback (blocks, startIdx, endIdx)
+local function wrapSection (blocks, startIdx, endIdx)
   -- transform headers into plain (but formatted) text
   blocks[startIdx] = pandoc.Para{pandoc.RawInline("markdown", "[u]"), pandoc.Strong(blocks[startIdx].content), pandoc.RawInline("markdown","[/u]")}
   blocks[startIdx].content:insert(pandoc.RawInline("markdown", " [spoiler]"))
@@ -25,7 +26,7 @@ return {
     end
   }, { -- add spoilers
     Pandoc=function(doc)
-      require"sections"(doc.blocks, callback, condition)
+      require"sections"(doc.blocks, wrapSection, condition)
       return doc
     end
   }

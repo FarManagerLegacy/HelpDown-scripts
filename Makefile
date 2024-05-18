@@ -25,7 +25,7 @@ make forum
   Convert to phpBB-flavored markdown (Litedown).
 
 make clean
-  Clean current directory from all files with extensins specified in TARGET_EXT.
+  Clean current directory from all files with extensions specified in TARGET_EXT.
 
 make help
   This help
