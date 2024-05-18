@@ -65,6 +65,7 @@ EXTRA+=--lua-filter=FarLinks.lua
 #https://www.nuget.org/packages/HtmlToFarHelp
 HTMLTOFARHELP?=HtmlToFarHelp.exe
 
+SHELL:=$(ComSpec)
 RM:=del
 
 ifdef DATA_DIR
