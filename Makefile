@@ -82,7 +82,7 @@ LUA_PATH:=$(LUA_PATH);$(DATA_DIR)\filters\?.lua;$(DATA_DIR)\filters\?\init.lua
 
 # intermediate file for hlf
 %.hlfhtml: TARGET_FORMAT:= --to=html --no-highlight
-%.hlfhtml: FLAGS+= --lua-filter=ChmLinks.lua
+%.hlfhtml: FLAGS+= --lua-filter=ChmLinks.lua --lua-filter=unDetails.lua
 %.hlfhtml: EXTRA:=
 
 # full-featured html, with headers, styles, ... (otherwise use `htm`)
