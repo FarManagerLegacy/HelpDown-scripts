@@ -93,7 +93,7 @@ LUA_PATH:=$(LUA_PATH);$(DATA_DIR)\filters\?.lua;$(DATA_DIR)\filters\?\init.lua
 
 # prepare text for posting on forum.farmanager.com
 %.forum: TARGET_FORMAT:=--to=markdown_strict+fenced_code_blocks-raw_html --lua-filter=DefinitionToBulletList.lua
-%.forum: FLAGS+= --lua-filter=fold.lua --lua-filter=forum.lua
+%.forum: FLAGS+= --lua-filter=fold.lua --lua-filter=forum.lua --lua-filter=DetailsToSpoiler.lua
 %.forum: EXTRA:=--shift-heading-level-by=1 --strip-comments
 
 #prevent circular dependencies
