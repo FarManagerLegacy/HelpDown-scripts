@@ -8,7 +8,7 @@ return function (blocks, callback, condition)
   local i = 1
   repeat
     local el = blocks[i]
-    if el.tag=="Header" then
+    if el.tag=="Header" and el.identifier~="" then
       local skip = condition and condition(el, blocks, i)
       if not skip then
         if start then
