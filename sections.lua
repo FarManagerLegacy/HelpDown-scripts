@@ -7,13 +7,13 @@ return function (blocks, callback, condition)
   local start
   local i = 1
   repeat
-    if blocks[i].t=="Header" then
-      local skip = condition and condition(blocks[i], blocks, i)
+    local el = blocks[i]
+    if el.tag=="Header" then
+      local skip = condition and condition(el, blocks, i)
       if not skip then
         if start then
-          local h = blocks[i]
           i = callback(blocks, start, i) or i
-          assert(blocks[i]==h,"wrong index returned by callback")
+          assert(blocks[i]==el,"wrong index returned by callback")
         end
         start = i
       end
