@@ -1,4 +1,5 @@
 -- Save space wrapping all (except first) sections content inside spoilers
+-- Sections with header level > meta.foldLevel (when specified) will be absorbed
 
 local function wrapSection (blocks, startIdx, endIdx)
   -- transform headers into plain (but formatted) text
@@ -26,7 +27,13 @@ return {
     end
   }, { -- add spoilers
     Pandoc=function(doc)
-      require"sections"(doc.blocks, wrapSection)
+      local foldLevel = doc.meta.foldLevel
+      foldLevel = foldLevel and tonumber(foldLevel[1].text)
+      require"sections"(doc.blocks, wrapSection, function (header)
+        if foldLevel and header.level>foldLevel then
+          return "absorb"
+        end
+      end)
       return doc
     end
   }
