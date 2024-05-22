@@ -3,8 +3,15 @@
 
 function Str (el)
   -- normal way of escaping the asterisk is \*, but that does not work in Litedown.
-  if el.text=="*" then
-    return pandoc.RawInline("markdown","[i]*[/i]")
+  if el.text:find"*" then
+    local parts,index,a,b = {},1
+    repeat
+      a,b,index = el.text:match("^([^*]*)%*([^*]*)()",index)
+      table.insert(parts, pandoc.Str(a))
+      table.insert(parts, pandoc.RawInline("markdown","*"))
+      table.insert(parts, pandoc.Str(b))
+    until index>el.text:len()
+    return parts
   end
 end
 
