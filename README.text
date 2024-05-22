@@ -42,7 +42,7 @@
 В качестве цели также может быть указано имя результирующего файла.
 
 
-[HelpDown Makefile scripts]: https://gist.github.com/7d00f4d8899ec9920b2b84ceed4a6e02
+[HelpDown Makefile scripts]: https://github.com/FarManagerLegacy/HelpDown-scripts
 [pandoc]: https://pandoc.org/installing.html
 [HtmlToFarHelp]: https://www.nuget.org/packages/HtmlToFarHelp
 [nupkg]: https://www.nuget.org/api/v2/package/HtmlToFarHelp/

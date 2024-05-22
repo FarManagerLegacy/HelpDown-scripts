@@ -1,5 +1,7 @@
+# https://github.com/FarManagerLegacy/HelpDown-scripts
+
 # required user setting
-BASE:=D:\repo\Makefile
+BASE:=D:\repo\HelpDown-scripts
 PANDOC:=C:\Apps\pandoc\pandoc.exe
 HTMLTOFARHELP:=$(FARPROFILE)\tools\HtmlToFarHelp\HtmlToFarHelp.exe
 
