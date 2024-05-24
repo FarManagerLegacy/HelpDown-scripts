@@ -60,7 +60,7 @@ endif
 PANDOC?=pandoc.exe
 TARGET_FORMAT:= # deduced from extension; defaulting to html
 FLAGS+=--wrap=preserve
-EXTRA+=--lua-filter=FarLinks.lua
+EXTRA+=--lua-filter=FarLinks.lua --strip-comments
 
 #https://www.nuget.org/packages/HtmlToFarHelp
 HTMLTOFARHELP?=HtmlToFarHelp.exe
@@ -86,7 +86,7 @@ LUA_PATH:=$(LUA_PATH);$(DATA_DIR)\filters\?.lua;$(DATA_DIR)\filters\?\init.lua
 %.hlfhtml: EXTRA:=
 
 # full-featured html, with headers, styles, ... (otherwise use `htm`)
-%.html: FLAGS+= --standalone --strip-comments --lua-filter=HeaderToTitle.lua
+%.html: FLAGS+= --standalone --lua-filter=HeaderToTitle.lua
 
 # github-flavored markdown (pandoc --list-extensions=gfm)
 %.md: TARGET_FORMAT:= --to=gfm --lua-filter=DefinitionToBulletList.lua --lua-filter=mdHeadersLinks.lua
@@ -94,7 +94,7 @@ LUA_PATH:=$(LUA_PATH);$(DATA_DIR)\filters\?.lua;$(DATA_DIR)\filters\?\init.lua
 # prepare text for posting on forum.farmanager.com
 %.forum: TARGET_FORMAT:=--to=markdown_strict+fenced_code_blocks-raw_html --lua-filter=DefinitionToBulletList.lua
 %.forum: FLAGS+= --lua-filter=fold.lua --lua-filter=forum.lua --lua-filter=DetailsToSpoiler.lua
-%.forum: EXTRA:=--shift-heading-level-by=1 --strip-comments
+%.forum: EXTRA:=--shift-heading-level-by=1
 
 #prevent circular dependencies
 %.text %.lua: ;
