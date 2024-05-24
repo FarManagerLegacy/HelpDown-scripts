@@ -89,7 +89,7 @@ LUA_PATH:=$(LUA_PATH);$(DATA_DIR)\filters\?.lua;$(DATA_DIR)\filters\?\init.lua
 %.html: FLAGS+= --standalone --strip-comments --lua-filter=HeaderToTitle.lua
 
 # github-flavored markdown (pandoc --list-extensions=gfm)
-%.md: TARGET_FORMAT:= --to=gfm --lua-filter=DefinitionToBulletList.lua
+%.md: TARGET_FORMAT:= --to=gfm --lua-filter=DefinitionToBulletList.lua --lua-filter=mdHeadersLinks.lua
 
 # prepare text for posting on forum.farmanager.com
 %.forum: TARGET_FORMAT:=--to=markdown_strict+fenced_code_blocks-raw_html --lua-filter=DefinitionToBulletList.lua
