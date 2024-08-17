@@ -15,7 +15,7 @@
 - [pandoc](https://pandoc.org/installing.html)
 - [HtmlToFarHelp](https://www.nuget.org/packages/HtmlToFarHelp) (или прямая ссылка на [файл пакета](https://www.nuget.org/api/v2/package/HtmlToFarHelp/))
 - [make](https://sourceforge.net/projects/ezwinports/files/) или `winget install ezwinports.make`
-- `Makefile` + cкрипты из данного репозитория. Или [архив](https://gist.github.com/johnd0e/7d00f4d8899ec9920b2b84ceed4a6e02/archive/master.zip).
+- `Makefile` + cкрипты из данного репозитория. Или [архив](https://github.com/FarManagerLegacy/HelpDown-scripts/zipball/master).
 
 Для чего же нужны фильтры, приведу лишь несколько примеров:
 
@@ -34,7 +34,7 @@
 
   </details>
 
-  Никто в здравом уме не станет сам с этим возиться, но если всё автоматически, то [почему бы и нет](https://forum.farmanager.com/viewtopic.php?t=8675).
+  Никто в здравом уме не станет сам с этим возиться, но если всё автоматически, то почему бы и нет.
 - Для **html** полезно Title не оставлять пустой, а продублировать туда первый Header.
 - Для **hlf**:
   - Cформировать индекс справки, и в каждый раздел добавить перекрёстные ссылки на другие
