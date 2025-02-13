@@ -129,5 +129,6 @@ install: $(DATA_DIR)/filters $(addprefix $(DATA_DIR)/filters/, $(wildcard *.lua)
 $(DATA_DIR)/filters:
 	mkdir $(subst /,\,$@)
 $(DATA_DIR)/filters/%: %
+	@rem copy $< $(subst /,\,$@)
 	@rem cmd /c mklink $(subst /,\, $@ $(realpath $<))
-	copy $< $(subst /,\,$@)
+	@ln -s $(subst /,\, $(realpath $<) $@) || true
