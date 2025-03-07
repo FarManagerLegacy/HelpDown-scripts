@@ -29,7 +29,7 @@ cleanup() {
 }
 
 if [[ "$CLEANUP" == "true" ]]; then
-  cookie_file=$(mktemp)
+  cookie_file="$(mktemp)"
   trap cleanup EXIT
   trap cleanup SIGINT
 else
@@ -41,21 +41,22 @@ extract_cookie () {
 }
 
 extract() {
-  echo $OUTPUT | sed -nE "s/.*name=\"$1\"[^>]* value=\"([^\"]*)\".*/\1/p"
+  value=$(echo $output | sed -nE "s/.*name=\"$1\"[^>]* (value|checked)=\"([^\"]*)\".*/\2/p")
+  [[ -n "$value" ]] && echo -n "$1=$value"
 }
 
 login() {
-  OUTPUT=$(curl -s "$LOGIN_URL")
+  output=$(curl -s "$LOGIN_URL")
   sleep 1
   echo Retreiving cookies...
   curl -s $LOGIN_URL -c "$cookie_file" \
     -d "username=$USERNAME" \
     -d "password=$PASSWORD" \
-    -d "autologin=on" \
-    -d "creation_time=$(extract creation_time)" \
-    -d "form_token=$(extract form_token)" \
-    -d "sid=$(extract sid)" \
-    -d "login=Login" \
+    -d autologin=on \
+    -d $(extract creation_time) \
+    -d $(extract form_token) \
+    -d $(extract sid) \
+    -d login=Login \
     | grep 'class="error"' || true
   if [[ -z $(extract_cookie k) ]]; then
     echo
@@ -70,31 +71,37 @@ if [[ ! -f "$cookie_file" ]]; then
 fi
 
 while true; do
-  OUTPUT=$(curl -s $POST_URL -b "$cookie_file" -c "$cookie_file")
+  output=$(curl -s $POST_URL -b "$cookie_file" -c "$cookie_file")
   if [[ -z $(extract_cookie k) ]]; then
     login
   else
     break
   fi
 done
-sleep 1
-echo Posting...
-STATUS_LINE=$(
-curl $POST_URL -sib "$cookie_file" \
-  -d "subject=$(extract subject)" \
-  --data-urlencode "message@$FILE" \
-  -d "edit_post_message_checksum=$(extract edit_post_message_checksum)" \
-  -d "edit_post_subject_checksum=$(extract edit_post_subject_checksum)" \
-  -d "post=Submit" \
-  -d "no_edit_log=on" \
-  -d "creation_time=$(extract creation_time)" \
-  -d "form_token=$(extract form_token)" \
-  | head -n 1
-)
 
-if [[ "$STATUS_LINE" == *302* ]]; then
+echo Preparing data...
+inputs='
+  edit_post_message_checksum edit_post_subject_checksum post creation_time form_token
+  disable_markdown topic_first_post_show disable_bbcode disable_smilies disable_magic_url attach_sig
+'
+args="-d no_edit_log=on"
+for input in $inputs; do
+  arg="$(extract $input)" || true
+  if [[ -n "$arg" ]]; then
+    args="$args -d $arg"
+  fi
+done
+
+echo Posting...
+output=$(
+  curl $POST_URL -sib "$cookie_file" --data-urlencode "message@$FILE" -d "$(extract subject | sed 's/\"/\\\"/g')" $args
+)
+status_line=$(echo "$output" | head -n 1)
+
+if [[ "$status_line" == *302* ]]; then
   echo Done.
 else
+  echo "$output" | grep 'class="error"' || echo "$output"
   echo Oops! Try again.
   trap cleanup EXIT
   exit 1
