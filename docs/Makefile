@@ -2,7 +2,7 @@
 
 # required user setting
 BASE:=..
-PANDOC:=C:\Apps\pandoc\pandoc.exe
+#PANDOC:=C:\Apps\pandoc\pandoc.exe
 HTMLTOFARHELP:="$(FARPROFILE)\tools\HtmlToFarHelp\HtmlToFarHelp.exe"
 
 # plug base Makefile
